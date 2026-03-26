@@ -9,7 +9,8 @@ import subprocess
 import tempfile
 
 PIPE_PATH = "/tmp/speak-pipe"
-VOICE = os.environ.get("SPEAK_VOICE", "Bruno")
+VOICE = os.environ.get("SPEAK_VOICE", "Luna")
+SPEED = float(os.environ.get("SPEAK_SPEED", "1.4"))
 
 # Suppress HuggingFace warning
 os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
@@ -36,7 +37,7 @@ try:
                 with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
                     tmp_path = f.name
                 try:
-                    tts.generate_to_file(text, tmp_path, voice=VOICE)
+                    tts.generate_to_file(text, tmp_path, voice=VOICE, speed=SPEED)
                     subprocess.run(["afplay", tmp_path], check=True)
                 finally:
                     if os.path.exists(tmp_path):
