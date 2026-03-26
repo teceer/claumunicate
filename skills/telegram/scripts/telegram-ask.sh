@@ -20,6 +20,11 @@ if [[ -z "$QUESTION" ]]; then
   exit 1
 fi
 
+# Append a static footer so it's clear Claude is blocked waiting for a reply
+QUESTION="${QUESTION}
+
+⏳ _Claude is waiting for your reply_"
+
 PENDING_FILE="/tmp/telegram-pending"
 REPLY_FILE="/tmp/telegram-reply"
 TIMEOUT_SECONDS=300  # 5 minutes
@@ -32,7 +37,8 @@ rm -f "$PENDING_FILE" "$REPLY_FILE"
 RESPONSE=$(curl -s -X POST \
   "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
   --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-  --data-urlencode "text=${QUESTION}")
+  --data-urlencode "text=${QUESTION}" \
+  --data-urlencode "parse_mode=Markdown")
 
 OK=$(echo "$RESPONSE" | jq -r '.ok')
 if [[ "$OK" != "true" ]]; then
